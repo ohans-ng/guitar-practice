@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guitar Practice</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Libre+Baskerville:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    [data-theme="dark"] {
+      --bg: #0e0f0c;
+      --bg2: #161714;
+      --bg3: #1e1f1b;
+      --bg4: #252621;
+      --bdr: rgba(255, 255, 255, 0.07);
+      --bdr2: rgba(255, 255, 255, 0.14);
+      --tx: #e8e6df;
+      --tx2: #9a9890;
+      --tx3: #5a5955;
+      --ac: #d4a843;
+      --ac2: #e8c87a;
+      --acd: rgba(212, 168, 67, 0.15);
+      --fb-bg: #161714;
+      --stage-glow: rgba(212, 168, 67, 0.04);
+    }
+
+    [data-theme="light"] {
+      --bg: #f4f3ef;
+      --bg2: #ffffff;
+      --bg3: #f0efe9;
+      --bg4: #e8e7e0;
+      --bdr: rgba(0, 0, 0, 0.08);
+      --bdr2: rgba(0, 0, 0, 0.15);
+      --tx: #1a1a18;
+      --tx2: #5a5955;
+      --tx3: #9a9890;
+      --ac: #b8861e;
+      --ac2: #d4a843;
+      --acd: rgba(184, 134, 30, 0.12);
+      --fb-bg: #f5f0e8;
+      --stage-glow: rgba(184, 134, 30, 0.04);
+    }
+
+    :root {
+      --red: #c9554a;
+      --r: 10px;
+      --rs: 6px;
+      --col-r: #d4a843;
+      --col-t: #4a7ec9;
+      --col-f: #4a9e6e;
+      --col-s: #8b6cc9;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--tx);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      transition: background .25s, color .25s;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 12px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px;
+      align-items: start;
+    }
+
+    @media(max-width:860px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .main-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card {
+      background: var(--bg2);
+      border: 0.5px solid var(--bdr);
+      border-radius: var(--r);
+    }
+
+    .panel {
+      background: var(--bg2);
+      border: 0.5px solid var(--bdr);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+
+    .panel-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .12s;
+    }
+
+    .panel-hd:hover {
+      background: var(--bg3);
+    }
+
+    .panel-ttl {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--tx3);
+    }
+
+    .panel-arr {
+      font-size: 10px;
+      color: var(--tx3);
+      transition: transform .22s;
+    }
+
+    .panel.open .panel-arr {
+      transform: rotate(180deg);
+    }
+
+    .panel-body {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height .28s ease;
+    }
+
+    .panel.open .panel-body {
+      max-height: 900px;
+    }
+
+    .panel-inner {
+      padding: 0 14px 14px;
+    }
+
+    .app-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: var(--bg2);
+      border: 0.5px solid var(--bdr);
+      border-radius: var(--r);
+    }
+
+    .app-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 18px;
+      letter-spacing: .01em;
+    }
+
+    .app-title em {
+      color: var(--ac);
+      font-style: italic;
+    }
+
+    .chord-stage {
+      background: var(--bg2);
+      border: 0.5px solid var(--bdr);
+      border-radius: var(--r);
+      padding: 28px 24px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chord-stage::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 0%, var(--stage-glow) 0%, transparent 70%);
+    }
+
+    .chord-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 10px;
+    }
+
+    .chord-side {
+      flex: 1;
+    }
+
+    .chord-side.left {
+      text-align: right;
+    }
+
+    .chord-side.right {
+      text-align: left;
+    }
+
+    .chord-side-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 22px;
+      color: var(--tx3);
+    }
+
+    .chord-side-lbl {
+      font-size: 10px;
+      color: var(--tx3);
+      margin-top: 2px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .chord-center {
+      flex: 0 0 auto;
+      text-align: center;
+    }
+
+    .chord-main {
+      font-family: 'DM Mono', monospace;
+      font-size: 72px;
+      font-weight: 500;
+      color: var(--tx);
+      line-height: 1;
+      letter-spacing: -.02em;
+    }
+
+    .notes-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .npill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      border: 0.5px solid;
+    }
+
+    .npill.root {
+      background: rgba(212, 168, 67, .12);
+      border-color: rgba(212, 168, 67, .3);
+      color: var(--col-r);
+    }
+
+    .npill.third {
+      background: rgba(74, 126, 201, .12);
+      border-color: rgba(74, 126, 201, .3);
+      color: var(--col-t);
+    }
+
+    .npill.fifth {
+      background: rgba(74, 158, 110, .12);
+      border-color: rgba(74, 158, 110, .3);
+      color: var(--col-f);
+    }
+
+    .npill.seventh {
+      background: rgba(139, 108, 201, .12);
+      border-color: rgba(139, 108, 201, .3);
+      color: var(--col-s);
+    }
+
+    .npill.other {
+      background: rgba(90, 89, 85, .12);
+      border-color: rgba(90, 89, 85, .3);
+      color: var(--tx3);
+    }
+
+    .beat-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .bdot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1.5px solid var(--bdr2);
+      transition: all .08s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-family: 'DM Mono', monospace;
+      color: var(--tx3);
+      user-select: none;
+      position: relative;
+    }
+
+    .bdot:hover {
+      border-color: var(--tx2);
+    }
+
+    .bdot.muted {
+      opacity: 0.22;
+    }
+
+    .bdot.on {
+      background: var(--bg4);
+      border-color: var(--tx);
+      transform: scale(1.08);
+    }
+
+    .bdot.accent-beat {
+      background: var(--acd);
+      border-color: var(--ac);
+    }
+
+    .bdot.playing {
+      border-color: var(--tx) !important;
+      box-shadow: 0 0 0 3px rgba(232, 198, 122, 0.25);
+    }
+
+    .bdot.playing.accent-beat {
+      box-shadow: 0 0 0 4px rgba(212, 168, 67, 0.35), 0 0 12px rgba(212, 168, 67, 0.3);
+    }
+
+    .transport {
+      background: var(--bg2);
+      border: 0.5px solid var(--bdr);
+      border-radius: var(--r);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 7px 16px;
+      border-radius: var(--rs);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      border: 0.5px solid var(--bdr2);
+      background: var(--bg3);
+      color: var(--tx);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .btn:hover {
+      background: var(--bg4);
+    }
+
+    .btn.primary {
+      background: var(--ac);
+      color: #1a1a00;
+      border-color: var(--ac);
+      font-weight: 600;
+    }
+
+    .btn.primary:hover {
+      background: var(--ac2);
+    }
+
+    .btn.danger {
+      color: var(--red);
+      border-color: rgba(201, 85, 74, .3);
+      background: var(--bg3);
+    }
+
+    .btn.danger:hover {
+      background: rgba(201, 85, 74, .1);
+    }
+
+    .btn.warn {
+      color: #e8a020;
+      border-color: rgba(232, 160, 32, .3);
+      background: rgba(232, 160, 32, .08);
+    }
+
+    .btn.warn:hover {
+      background: rgba(232, 160, 32, .15);
+    }
+
+    .btn.muted {
+      color: var(--tx2);
+    }
+
+    .btn.muted.on {
+      color: var(--ac);
+      border-color: rgba(212, 168, 67, .4);
+      background: var(--acd);
+    }
+
+    .btn.sm {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .btn.xs {
+      padding: 3px 8px;
+      font-size: 11px;
+    }
+
+    .bpm-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .bpm-lbl {
+      font-size: 11px;
+      color: var(--tx3);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .bpm-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--ac);
+      min-width: 40px;
+      text-align: center;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--bg4);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--ac);
+      border: 2px solid var(--bg2);
+      cursor: pointer;
+    }
+
+    input[type=range]::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--ac);
+      border: none;
+      cursor: pointer;
+    }
+
+    .queue-strip {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 2px 0 4px;
+      scrollbar-width: none;
+    }
+
+    .queue-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .qchip {
+      flex: 0 0 auto;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      background: var(--bg3);
+      border: 0.5px solid var(--bdr);
+      color: var(--tx3);
+    }
+
+    .qchip.cur {
+      background: var(--acd);
+      border-color: rgba(212, 168, 67, .5);
+      color: var(--ac);
+      font-weight: 500;
+    }
+
+    .qchip.next {
+      background: var(--bg4);
+      border-color: var(--bdr2);
+      color: var(--tx2);
+    }
+
+    .fb-card {
+      background: var(--bg2);
+      border: 0.5px solid var(--bdr);
+      border-radius: var(--r);
+      padding: 16px 20px 18px;
+    }
+
+    .sec-ttl {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--tx3);
+    }
+
+    #fb-canvas {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .role-toggles {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .rbtn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      border: 0.5px solid;
+      cursor: pointer;
+      background: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: opacity .15s;
+    }
+
+    .rbtn.off {
+      opacity: .3;
+    }
+
+    .rbtn[data-role=root] {
+      border-color: rgba(212, 168, 67, .4);
+      color: var(--col-r);
+    }
+
+    .rbtn[data-role=third] {
+      border-color: rgba(74, 126, 201, .4);
+      color: var(--col-t);
+    }
+
+    .rbtn[data-role=fifth] {
+      border-color: rgba(74, 158, 110, .4);
+      color: var(--col-f);
+    }
+
+    .rbtn[data-role=seventh] {
+      border-color: rgba(139, 108, 201, .4);
+      color: var(--col-s);
+    }
+
+    .rdot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .rbtn[data-role=root] .rdot {
+      background: var(--col-r);
+    }
+
+    .rbtn[data-role=third] .rdot {
+      background: var(--col-t);
+    }
+
+    .rbtn[data-role=fifth] .rdot {
+      background: var(--col-f);
+    }
+
+    .rbtn[data-role=seventh] .rdot {
+      background: var(--col-s);
+    }
+
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+    }
+
+    .kbtn {
+      padding: 6px 2px;
+      border-radius: var(--rs);
+      border: 0.5px solid var(--bdr);
+      background: var(--bg3);
+      color: var(--tx2);
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      cursor: pointer;
+      text-align: center;
+      transition: all .12s;
+    }
+
+    .kbtn:hover {
+      background: var(--bg4);
+      color: var(--tx);
+    }
+
+    .kbtn.on {
+      background: var(--acd);
+      border-color: rgba(212, 168, 67, .5);
+      color: var(--ac);
+    }
+
+    .ctrl-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .ctrl-lbl {
+      font-size: 11px;
+      color: var(--tx3);
+    }
+
+    select {
+      background: var(--bg3);
+      border: 0.5px solid var(--bdr2);
+      border-radius: var(--rs);
+      color: var(--tx);
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      padding: 5px 7px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    select:focus {
+      border-color: var(--ac);
+    }
+
+    .tog-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .tog-lbl {
+      font-size: 11px;
+      color: var(--tx2);
+    }
+
+    .sw {
+      position: relative;
+      width: 32px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .sw input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .sw-track {
+      position: absolute;
+      inset: 0;
+      background: var(--bg4);
+      border-radius: 9px;
+      border: 0.5px solid var(--bdr2);
+      transition: all .2s;
+    }
+
+    .sw input:checked+.sw-track {
+      background: var(--ac);
+      border-color: var(--ac);
+    }
+
+    .sw-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--tx3);
+      transition: all .2s;
+      pointer-events: none;
+    }
+
+    .sw input:checked~.sw-thumb {
+      left: 16px;
+      background: var(--bg2);
+    }
+
+    .ctype-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .ctbtn {
+      padding: 5px 4px;
+      border-radius: var(--rs);
+      border: 0.5px solid var(--bdr);
+      background: var(--bg3);
+      color: var(--tx3);
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      cursor: pointer;
+      text-align: center;
+      transition: all .12s;
+    }
+
+    .ctbtn:hover {
+      color: var(--tx2);
+    }
+
+    .ctbtn.on {
+      background: var(--acd);
+      border-color: rgba(212, 168, 67, .3);
+      color: var(--ac);
+    }
+
+    .prog-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: var(--rs);
+      border: 0.5px solid var(--bdr);
+      background: var(--bg3);
+      cursor: pointer;
+      transition: all .12s;
+      margin-bottom: 4px;
+    }
+
+    .prog-item:hover {
+      background: var(--bg4);
+      border-color: var(--bdr2);
+    }
+
+    .prog-item.on {
+      background: var(--acd);
+      border-color: rgba(212, 168, 67, .4);
+    }
+
+    .prog-name {
+      font-size: 12px;
+      color: var(--tx2);
+      flex: 1;
+    }
+
+    .prog-item.on .prog-name {
+      color: var(--ac);
+    }
+
+    .prog-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--tx3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .prog-item.on .prog-sub {
+      color: rgba(212, 168, 67, .6);
+    }
+
+    .prog-acts {
+      display: flex;
+      gap: 2px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .pact-btn {
+      font-size: 10px;
+      color: var(--tx3);
+      padding: 2px 5px;
+      border-radius: 3px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: color .12s;
+    }
+
+    .pact-btn:hover {
+      color: var(--tx);
+    }
+
+    .pact-btn.del:hover {
+      color: var(--red);
+    }
+
+    .sinput {
+      width: 100%;
+      background: var(--bg3);
+      border: 0.5px solid var(--bdr2);
+      border-radius: var(--rs);
+      color: var(--tx);
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
+      padding: 6px 10px;
+      outline: none;
+    }
+
+    .sinput:focus {
+      border-color: var(--ac);
+    }
+
+    .sinput::placeholder {
+      color: var(--tx3);
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, .6);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg2);
+      border: 0.5px solid var(--bdr2);
+      border-radius: var(--r);
+      padding: 22px 24px;
+      width: 420px;
+      max-width: 95vw;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+
+    .modal-ttl {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 18px;
+      color: var(--tx);
+    }
+
+    .mrow {
+      margin-bottom: 14px;
+    }
+
+    .mrow>label {
+      display: block;
+      font-size: 10px;
+      color: var(--tx3);
+      margin-bottom: 6px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .slider-note {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      min-width: 50px;
+      font-weight: 500;
+    }
+
+    .slider-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--ac);
+      min-width: 30px;
+      text-align: right;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 0.5px solid var(--bdr);
+    }
+
+    .divider {
+      height: 0.5px;
+      background: var(--bdr);
+      margin: 14px 0;
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ac);
+      display: inline-block;
+      margin-right: 5px;
+      box-shadow: 0 0 6px var(--ac);
+      animation: pd 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pd {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    @keyframes chord-pop {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .chord-pop {
+      animation: chord-pop .2s ease;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .step-box {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      background: var(--bg3);
+      border: 0.5px solid var(--bdr);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--tx);
+      position: relative;
+      user-select: none;
+    }
+
+    .step-box.sel {
+      border-color: var(--ac);
+      background: var(--bg4);
+      box-shadow: 0 0 0 1px var(--ac);
+    }
+
+    .step-box.has-rhythm {
+      border-color: var(--red);
+      box-shadow: inset 0 0 4px rgba(201, 85, 74, 0.4);
+    }
+
+    .step-box.has-note::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--ac);
+    }
+
+    .step-box.playing {
+      background: var(--acd);
+      border-color: var(--ac);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <div class="main-col">
+      <div class="chord-stage">
+        <div class="chord-row">
+          <div class="chord-side left">
+            <div class="chord-side-name" id="el-prev">—</div>
+            <div class="chord-side-lbl">이전</div>
+          </div>
+          <div class="chord-center">
+            <div class="chord-main" id="el-curr">—</div>
+          </div>
+          <div class="chord-side right">
+            <div class="chord-side-name" id="el-next">—</div>
+            <div class="chord-side-lbl">다음</div>
+          </div>
+        </div>
+        <div class="notes-row" id="el-notes"></div>
+        <div class="beat-row" id="el-beats"></div>
+      </div>
+
+      <div class="card" style="padding:10px 16px">
+        <div class="sec-ttl" style="margin-bottom:8px">진행 큐</div>
+        <div class="queue-strip" id="el-queue"></div>
+      </div>
+
+      <div class="transport">
+        <button class="btn primary" id="btn-play" onclick="GP.togglePlay()">▶ 시작</button>
+        <button class="btn warn" id="btn-pause" onclick="GP.togglePause()" style="display:none">⏸ 일시정지</button>
+        <button class="btn" onclick="GP.prevChord()">← 이전</button>
+        <button class="btn" onclick="GP.nextChord()">다음 →</button>
+        <button class="btn muted" onclick="GP.listenChord()">♪ 코드 듣기</button>
+        <button class="btn muted" id="btn-accomp" onclick="GP.toggleAccomp()">🎸 반주</button>
+        <button class="btn muted sm" onclick="GP.openSettings()">⚙ 반주 설정</button>
+        <div class="bpm-group">
+          <span class="bpm-lbl">BPM</span>
+          <button class="btn sm" onclick="GP.shiftBpm(-5)">−</button>
+          <input type="range" id="sl-bpm" min="40" max="240" value="80" style="width:80px"
+            oninput="GP.setBpm(+this.value)">
+          <button class="btn sm" onclick="GP.shiftBpm(5)">+</button>
+          <span class="bpm-num" id="el-bpm">80</span>
+        </div>
+      </div>
+
+      <div class="fb-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div class="sec-ttl">코드톤 지판</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <select id="sel-frets" onchange="GP.drawFB()">
+              <option value="12">12 프렛</option>
+              <option value="17" selected>17 프렛</option>
+              <option value="22">22 프렛</option>
+            </select>
+            <select id="sel-pos" onchange="GP.drawFB()">
+              <option value="all">전체</option>
+              <option value="0">0–5</option>
+              <option value="4">4–9</option>
+              <option value="7">7–12</option>
+              <option value="9">9–14</option>
+            </select>
+          </div>
+        </div>
+        <div class="role-toggles">
+          <button class="rbtn" data-role="root" onclick="GP.toggleRole(this)">
+            <div class="rdot"></div>루트
+          </button>
+          <button class="rbtn" data-role="third" onclick="GP.toggleRole(this)">
+            <div class="rdot"></div>3도
+          </button>
+          <button class="rbtn" data-role="fifth" onclick="GP.toggleRole(this)">
+            <div class="rdot"></div>5도
+          </button>
+          <button class="rbtn" data-role="seventh" onclick="GP.toggleRole(this)">
+            <div class="rdot"></div>7도
+          </button>
+          <button class="rbtn" id="btn-next-ghost" data-role="nextghost" onclick="GP.toggleNextGhost(this)"
+            style="border-color:rgba(150,150,150,.3);color:var(--tx3)">
+            <div class="rdot" style="background:var(--tx3)"></div>다음 코드
+          </button>
+          <button class="rbtn" id="btn-scale-show" onclick="GP.openScaleModal()"
+            style="border-color:rgba(74,158,110,.4);color:var(--col-f)">
+            <div class="rdot" style="background:var(--col-f)"></div>스케일
+          </button>
+        </div>
+        <div
+          style="display:flex;gap:6px;margin-top:10px;align-items:center;background:var(--bg3);padding:8px 10px;border-radius:var(--rs);border:0.5px solid var(--bdr)">
+          <label class="sw"><input type="checkbox" id="tog-voicing" onchange="GP.toggleVoicingMode()">
+            <div class="sw-track"></div>
+            <div class="sw-thumb"></div>
+          </label>
+          <span style="font-size:11px;color:var(--tx2);margin-right:4px">보이싱 폼</span>
+          <select id="sel-voicing-type" onchange="GP.changeVoicingType()" style="flex:1" disabled>
+            <option value="shell_6">Shell (6번줄 루트)</option>
+            <option value="shell_5">Shell (5번줄 루트)</option>
+            <option value="drop2_14">Drop 2 (1~4번줄)</option>
+            <option value="drop2_25">Drop 2 (2~5번줄)</option>
+            <option value="drop3_26">Drop 3 (2,3,4,6번줄)</option>
+          </select>
+          <div style="display:flex;gap:2px">
+            <button class="btn xs" id="btn-v-prev" onclick="GP.prevVoicingInv()" disabled>◀</button>
+            <span id="el-v-inv"
+              style="font-size:10px;color:var(--tx);min-width:30px;text-align:center;font-family:'DM Mono',monospace;line-height:1.8">1/1</span>
+            <button class="btn xs" id="btn-v-next" onclick="GP.nextVoicingInv()" disabled>▶</button>
+          </div>
+          <button class="btn xs primary" id="btn-v-play" onclick="GP.playCurrentVoicing()" disabled>♪ 듣기</button>
+        </div>
+        <canvas id="fb-canvas" style="cursor:pointer"></canvas>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="panel open" id="panel-key">
+        <div class="panel-hd" onclick="GP.togglePanel('panel-key')"><span class="panel-ttl">키 선택</span><span
+            class="panel-arr">▾</span></div>
+        <div class="panel-body">
+          <div class="panel-inner">
+            <div class="key-grid">
+              <button class="kbtn" data-key="C" onclick="GP.setKey(this)">C</button>
+              <button class="kbtn" data-key="Db" onclick="GP.setKey(this)">D♭</button>
+              <button class="kbtn" data-key="D" onclick="GP.setKey(this)">D</button>
+              <button class="kbtn" data-key="Eb" onclick="GP.setKey(this)">E♭</button>
+              <button class="kbtn" data-key="E" onclick="GP.setKey(this)">E</button>
+              <button class="kbtn" data-key="F" onclick="GP.setKey(this)">F</button>
+              <button class="kbtn" data-key="F#" onclick="GP.setKey(this)">F♯</button>
+              <button class="kbtn" data-key="G" onclick="GP.setKey(this)">G</button>
+              <button class="kbtn" data-key="Ab" onclick="GP.setKey(this)">A♭</button>
+              <button class="kbtn" data-key="A" onclick="GP.setKey(this)">A</button>
+              <button class="kbtn" data-key="Bb" onclick="GP.setKey(this)">B♭</button>
+              <button class="kbtn" data-key="B" onclick="GP.setKey(this)">B</button>
+              <button class="kbtn on" data-key="random" onclick="GP.setKey(this)"
+                style="grid-column:span 6;font-size:10px">🎲 모든 키 랜덤</button>
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-lbl">박자</span>
+              <select id="sel-beats" onchange="GP.buildBeatDots()">
+                <option>2</option>
+                <option>3</option>
+                <option selected>4</option>
+                <option>6</option>
+              </select>
+              <span class="ctrl-lbl">박 /</span>
+              <select id="sel-bars">
+                <option selected>1</option>
+                <option>2</option>
+                <option>4</option>
+              </select>
+              <span class="ctrl-lbl">마디</span>
+            </div>
+            <div class="tog-row">
+              <span class="tog-lbl">메트로놈 소리</span>
+              <label class="sw"><input type="checkbox" id="tog-metro" checked>
+                <div class="sw-track"></div>
+                <div class="sw-thumb"></div>
+              </label>
+            </div>
+            <div id="metro-vol-row" style="margin-top:10px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:11px;color:var(--tx3);min-width:52px">음량</span>
+                <input type="range" id="sl-metro-vol" min="0" max="100" value="60" style="flex:1"
+                  oninput="GP.setMetroVol(+this.value);document.getElementById('el-metro-vol').textContent=this.value">
+                <span
+                  style="font-family:'DM Mono',monospace;font-size:11px;color:var(--ac);min-width:28px;text-align:right"
+                  id="el-metro-vol">60</span>
+              </div>
+            </div>
+            <div style="margin-top:10px">
+              <div
+                style="font-size:10px;color:var(--tx3);margin-bottom:7px;letter-spacing:.06em;text-transform:uppercase">
+                강박 위치 / 박 On·Off</div>
+              <div style="font-size:10px;color:var(--tx3);margin-bottom:8px">클릭: 음소거 토글 &nbsp;·&nbsp; 길게 클릭: 강박 설정</div>
+              <div id="metro-beat-btns" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel open" id="panel-types">
+        <div class="panel-hd" onclick="GP.togglePanel('panel-types')"><span class="panel-ttl">코드 타입 (랜덤)</span><span
+            class="panel-arr">▾</span></div>
+        <div class="panel-body">
+          <div class="panel-inner">
+            <div style="display:flex;gap:4px;margin-bottom:8px">
+              <button class="btn sm" style="flex:1" onclick="GP.allTypes()">전체</button>
+              <button class="btn sm" style="flex:1" onclick="GP.noneTypes()">없음</button>
+            </div>
+            <div class="ctype-grid" id="el-ctypes">
+              <button class="ctbtn on" data-t="maj">maj</button><button class="ctbtn on" data-t="min">min</button>
+              <button class="ctbtn on" data-t="7">7</button><button class="ctbtn on" data-t="maj7">maj7</button>
+              <button class="ctbtn on" data-t="m7">m7</button><button class="ctbtn on" data-t="m7b5">m7b5</button>
+              <button class="ctbtn on" data-t="dim">dim</button><button class="ctbtn" data-t="dim7">dim7</button>
+              <button class="ctbtn" data-t="aug">aug</button><button class="ctbtn" data-t="sus2">sus2</button>
+              <button class="ctbtn" data-t="sus4">sus4</button><button class="ctbtn" data-t="add9">add9</button>
+              <button class="ctbtn" data-t="6">6</button><button class="ctbtn" data-t="9">9</button>
+              <button class="ctbtn" data-t="13">13</button>
+            </div>
+            <div
+              style="margin-top:8px;padding:7px 10px;background:var(--bg3);border-radius:var(--rs);border:0.5px solid var(--bdr)">
+              <div style="font-size:10px;color:var(--tx3);margin-bottom:3px">사용 중</div>
+              <div id="el-typedisp"
+                style="font-family:'DM Mono',monospace;font-size:11px;color:var(--tx2);line-height:1.6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel open" id="panel-progs">
+        <div class="panel-hd" onclick="GP.togglePanel('panel-progs')"><span class="panel-ttl">코드 진행 프리셋</span><span
+            class="panel-arr">▾</span></div>
+        <div class="panel-body">
+          <div class="panel-inner">
+            <div id="el-builtin-progs">
+              <div class="prog-item" data-pid="random" onclick="GP.chooseProg(this)">
+                <div style="flex:1">
+                  <div class="prog-name">🎲 완전 랜덤</div>
+                  <div class="prog-sub">키+타입 모두 랜덤</div>
+                </div>
+              </div>
+              <div class="prog-item on" data-pid="251" onclick="GP.chooseProg(this)">
+                <div style="flex:1">
+                  <div class="prog-name">ii–V–I–I</div>
+                  <div class="prog-sub" id="pc-251"></div>
+                </div>
+              </div>
+              <div class="prog-item" data-pid="1625" onclick="GP.chooseProg(this)">
+                <div style="flex:1">
+                  <div class="prog-name">I–VI–II–V</div>
+                  <div class="prog-sub" id="pc-1625"></div>
+                </div>
+              </div>
+              <div class="prog-item" data-pid="1451" onclick="GP.chooseProg(this)">
+                <div style="flex:1">
+                  <div class="prog-name">I–IV–V–I</div>
+                  <div class="prog-sub" id="pc-1451"></div>
+                </div>
+              </div>
+              <div class="prog-item" data-pid="blues" onclick="GP.chooseProg(this)">
+                <div style="flex:1">
+                  <div class="prog-name">12마디 블루스</div>
+                  <div class="prog-sub" id="pc-blues"></div>
+                </div>
+              </div>
+              <div class="prog-item" data-pid="fblues" onclick="GP.chooseProg(this)">
+                <div style="flex:1">
+                  <div class="prog-name">F 블루스 형식 (24마디)</div>
+                  <div class="prog-sub" id="pc-fblues"></div>
+                </div>
+              </div>
+              <div class="prog-item" data-pid="rhythm" onclick="GP.chooseProg(this)">
+                <div style="flex:1">
+                  <div class="prog-name">리듬 체인지</div>
+                  <div class="prog-sub" id="pc-rhythm"></div>
+                </div>
+              </div>
+            </div>
+            <div id="el-custom-progs"></div>
+
+
+
+            <div style="margin-top:10px;padding-top:10px;border-top:0.5px solid var(--bdr)">
+              <div style="font-size:10px;color:var(--tx3);margin-bottom:4px" id="form-label">커스텀 진행 저장</div>
+              <div style="font-size:10px;color:var(--tx3);margin-bottom:6px;line-height:1.5">코드명 입력 (예: Dm7, G7, CM7,
+                CM7)<br>키 변환 적용 시 체크박스 선택</div>
+              <input class="sinput" id="inp-cname" placeholder="이름" style="margin-bottom:5px">
+              <input class="sinput" id="inp-cchords" placeholder="Dm7, G7, CM7, CM7" style="margin-bottom:4px">
+              <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
+                <label style="font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:5px;cursor:pointer">
+                  <input type="checkbox" id="chk-transposable" style="accent-color:var(--ac)"> 키 변환 적용
+                </label>
+              </div>
+              <button class="btn primary" id="btn-save-prog" style="width:100%;padding:7px;font-size:12px"
+                onclick="GP.saveCustomProg()">+ 저장</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+
+  <!-- Accomp Settings Modal -->
+  <div class="overlay" id="modal-settings">
+    <div class="modal">
+      <div class="modal-ttl">반주 설정</div>
+      <div class="mrow">
+        <label>아르페지오 (템포 동기화)</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          <button class="btn on sm" id="arp-none" onclick="GP.setArp('none')">화음 (동시)</button>
+          <button class="btn sm" id="arp-up" onclick="GP.setArp('up')">↑ 업 (자동분할)</button>
+          <button class="btn sm" id="arp-down" onclick="GP.setArp('down')">↓ 다운 (자동분할)</button>
+        </div>
+      </div>
+      <div class="mrow">
+        <label>1마디 연주 횟수</label>
+        <select id="sel-strum">
+          <option value="1" selected>1회 (마디 시작)</option>
+          <option value="2">2회</option>
+          <option value="4">4회 (매 박)</option>
+        </select>
+      </div>
+      <div class="mrow">
+        <label>전체 볼륨</label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="range" id="sl-mvol" min="0" max="100" value="70" style="flex:1"
+            oninput="document.getElementById('el-mvol').textContent=this.value">
+          <span class="slider-val" id="el-mvol">70</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="mrow">
+        <label>도수별 음량 (모든 코드 적용)</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+          <div class="slider-row">
+            <span class="slider-note" style="color:var(--col-r)">루트</span>
+            <input type="range" id="sl-r" min="0" max="100" value="100" style="flex:1"
+              oninput="GP.setRoleVol('root',+this.value);document.getElementById('vv-r').textContent=this.value">
+            <span class="slider-val" id="vv-r">100</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-note" style="color:var(--col-t)">3도</span>
+            <input type="range" id="sl-t" min="0" max="100" value="100" style="flex:1"
+              oninput="GP.setRoleVol('third',+this.value);document.getElementById('vv-t').textContent=this.value">
+            <span class="slider-val" id="vv-t">100</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-note" style="color:var(--col-f)">5도</span>
+            <input type="range" id="sl-f" min="0" max="100" value="100" style="flex:1"
+              oninput="GP.setRoleVol('fifth',+this.value);document.getElementById('vv-f').textContent=this.value">
+            <span class="slider-val" id="vv-f">100</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-note" style="color:var(--col-s)">7도</span>
+            <input type="range" id="sl-s" min="0" max="100" value="100" style="flex:1"
+              oninput="GP.setRoleVol('seventh',+this.value);document.getElementById('vv-s').textContent=this.value">
+            <span class="slider-val" id="vv-s">100</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-note" style="color:var(--tx3)">기타</span>
+            <input type="range" id="sl-o" min="0" max="100" value="100" style="flex:1"
+              oninput="GP.setRoleVol('other',+this.value);document.getElementById('vv-o').textContent=this.value">
+            <span class="slider-val" id="vv-o">100</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn" onclick="GP.closeSettings()">닫기</button></div>
+    </div>
+  </div>
+
+  <!-- Scale Modal -->
+  <div class="overlay" id="modal-scale">
+    <div class="modal">
+      <div class="modal-ttl">스케일 설정</div>
+      <div class="mrow">
+        <label>스케일 표시</label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <label class="sw"><input type="checkbox" id="chk-scale-on">
+            <div class="sw-track"></div>
+            <div class="sw-thumb"></div>
+          </label>
+          <span style="font-size:12px;color:var(--tx2)">켜면 코드톤 외 스케일 음 표시</span>
+        </div>
+      </div>
+      <div class="mrow">
+        <label>스케일 선택</label>
+        <select id="sel-scale" onchange="GP.onScaleChange()" style="width:100%;margin-bottom:8px">
+          <option value="major">메이저 (Ionian)</option>
+          <option value="minor">마이너 (Natural minor)</option>
+          <option value="dorian">도리안 (Dorian)</option>
+          <option value="phrygian">프리지안 (Phrygian)</option>
+          <option value="lydian">리디안 (Lydian)</option>
+          <option value="mixolydian">믹솔리디안 (Mixolydian)</option>
+          <option value="locrian">로크리안 (Locrian)</option>
+          <option value="harmonic_minor">하모닉 마이너</option>
+          <option value="melodic_minor">멜로딕 마이너</option>
+          <option value="blues">블루스 스케일</option>
+          <option value="pentatonic_major">펜타토닉 메이저</option>
+          <option value="pentatonic_minor">펜타토닉 마이너</option>
+          <option value="custom">커스텀</option>
+        </select>
+        <div id="scale-intervals-disp"
+          style="font-family:'DM Mono',monospace;font-size:11px;color:var(--tx2);padding:6px 10px;background:var(--bg3);border-radius:var(--rs)">
+        </div>
+      </div>
+      <div class="mrow" id="custom-scale-row" style="display:none">
+        <label>커스텀 스케일 (C키 기준 반음 간격)</label>
+        <div style="font-size:10px;color:var(--tx3);margin-bottom:6px">예: C,D,E,F,G,A,Bb → 0,2,4,5,7,9,10</div>
+        <input class="sinput" id="inp-custom-scale" placeholder="0,2,4,5,7,9,10" style="margin-bottom:6px">
+        <input class="sinput" id="inp-custom-scale-name" placeholder="스케일 이름 (저장용)" style="margin-bottom:6px">
+        <button class="btn sm" onclick="GP.applyCustomScale()">적용</button>
+        <button class="btn sm" onclick="GP.saveCustomScale()">저장</button>
+      </div>
+      <div id="saved-scales-list" style="margin-top:8px"></div>
+      <div class="modal-footer"><button class="btn" onclick="GP.closeScaleModal()">닫기</button></div>
+    </div>
+  </div>
+
+  <script>
+    const GP = (() => {
+      'use strict';
+
+      // ── Music tables ─────────────────────────────────────────
+      const NOTES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+      const N2I = {};
+      NOTES.forEach((n, i) => { N2I[n] = i; });
+      N2I['Db'] = 1; N2I['D#'] = 3; N2I['Gb'] = 6; N2I['G#'] = 8; N2I['A#'] = 10; N2I['B#'] = 0;
+      const ENH = { 'C#': 'Db', 'Db': 'C#', 'D#': 'Eb', 'Eb': 'D#', 'F#': 'Gb', 'Gb': 'F#', 'G#': 'Ab', 'Ab': 'G#', 'A#': 'Bb', 'Bb': 'A#' };
+
+      const IVLS = {
+        'maj': [0, 4, 7], 'M': [0, 4, 7],
+        'min': [0, 3, 7], 'm': [0, 3, 7], '-': [0, 3, 7],
+        '7': [0, 4, 7, 10], 'dom7': [0, 4, 7, 10],
+        'maj7': [0, 4, 7, 11], 'M7': [0, 4, 7, 11],
+        'm7': [0, 3, 7, 10], '-7': [0, 3, 7, 10], 'min7': [0, 3, 7, 10],
+        'm7b5': [0, 3, 6, 10], '-7b5': [0, 3, 6, 10], 'halfdim': [0, 3, 6, 10],
+        'dim': [0, 3, 6], 'dim7': [0, 3, 6, 9],
+        'aug': [0, 4, 8], '+': [0, 4, 8],
+        'sus2': [0, 2, 7], 'sus4': [0, 5, 7], 'add9': [0, 4, 7, 14],
+        '6': [0, 4, 7, 9], 'm6': [0, 3, 7, 9],
+        '9': [0, 4, 7, 10, 14], 'm9': [0, 3, 7, 10, 14], 'M9': [0, 4, 7, 11, 14], 'maj9': [0, 4, 7, 11, 14],
+        '13': [0, 4, 7, 10, 14, 21]
+      };
+      const CHORD_LBL = {
+        'maj': '', 'M': '', 'min': 'm', 'm': 'm', '-': 'm',
+        '7': '7', 'dom7': '7',
+        'maj7': 'M7', 'M7': 'M7',
+        'm7': 'm7', '-7': 'm7', 'min7': 'm7',
+        'm7b5': 'm7b5', '-7b5': 'm7b5', 'halfdim': 'm7b5',
+        'dim': 'dim', 'dim7': 'dim7',
+        'aug': 'aug', '+': 'aug',
+        'sus2': 'sus2', 'sus4': 'sus4', 'add9': 'add9',
+        '6': '6', 'm6': 'm6',
+        '9': '9', 'm9': 'm9', 'M9': 'M9', 'maj9': 'M9',
+        '13': '13'
+      };
+      const ROLE_OF = {
+        0: 'root', 1: 'other', 2: 'other', 3: 'third', 4: 'third', 5: 'other',
+        6: 'fifth', 7: 'fifth', 8: 'fifth', 9: 'seventh', 10: 'seventh', 11: 'seventh',
+        12: 'root', 14: 'other', 21: 'other'
+      };
+      const ROLE_COL = { root: '#d4a843', third: '#4a7ec9', fifth: '#4a9e6e', seventh: '#8b6cc9', other: '#5a5955' };
+      const STR_MIDI = [64, 59, 55, 50, 45, 40];
+      const STR_NAME = ['E', 'B', 'G', 'D', 'A', 'E'];
+
+      // Scales: intervals from root (semitones)
+      const SCALES = {
+        major: [0, 2, 4, 5, 7, 9, 11],
+        minor: [0, 2, 3, 5, 7, 8, 10],
+        dorian: [0, 2, 3, 5, 7, 9, 10],
+        phrygian: [0, 1, 3, 5, 7, 8, 10],
+        lydian: [0, 2, 4, 6, 7, 9, 11],
+        mixolydian: [0, 2, 4, 5, 7, 9, 10],
+        locrian: [0, 1, 3, 5, 6, 8, 10],
+        harmonic_minor: [0, 2, 3, 5, 7, 8, 11],
+        melodic_minor: [0, 2, 3, 5, 7, 9, 11],
+        blues: [0, 3, 5, 6, 7, 10],
+        pentatonic_major: [0, 2, 4, 7, 9],
+        pentatonic_minor: [0, 3, 5, 7, 10],
+        custom: [0, 2, 4, 5, 7, 9, 11]
+      };
+      const SCALE_NOTES_LBL = {
+        major: 'W W H W W W H', minor: 'W H W W H W W', dorian: 'W H W W W H W',
+        phrygian: 'H W W W H W W', lydian: 'W W W H W W H', mixolydian: 'W W H W W H W',
+        locrian: 'H W W H W W W', harmonic_minor: 'W H W W H A H',
+        melodic_minor: 'W H W W W W H', blues: 'm3 W H H m3 W',
+        pentatonic_major: 'W W m3 W m3', pentatonic_minor: 'm3 W W m3 W',
+        custom: '커스텀'
+      };
+
+      // Built-in progressions
+      const BUILT_IN = {
+        '251': k => { const r = ni(k), ii = NOTES[(r + 2) % 12], V = NOTES[(r + 7) % 12]; return [`${ii}m7`, `${V}7`, `${k}maj7`, `${k}maj7`]; },
+        '1625': k => { const r = ni(k), VI = NOTES[(r + 9) % 12], II = NOTES[(r + 2) % 12], V = NOTES[(r + 7) % 12]; return [`${k}maj7`, `${VI}m7`, `${II}m7`, `${V}7`]; },
+        '1451': k => { const r = ni(k), IV = NOTES[(r + 5) % 12], V = NOTES[(r + 7) % 12]; return [`${k}`, `${IV}`, `${V}7`, `${k}`]; },
+        'blues': k => { const r = ni(k), IV = NOTES[(r + 5) % 12], V = NOTES[(r + 7) % 12]; return [`${k}7`, `${k}7`, `${k}7`, `${k}7`, `${IV}7`, `${IV}7`, `${k}7`, `${k}7`, `${V}7`, `${IV}7`, `${k}7`, `${V}7`]; },
+        // F-blues form transposed to any key
+        'fblues': k => {
+          // F blues form (key-transposed):
+          // F7  F7  Bb7 Bb7 F7  F7  Cm7 F7
+          // Bb7 Bb7 Bdim7 Bdim7 F7 F7 Am7b5 D7
+          // Gm7 Gm7 C7  C7  F7  D7  Gm7 C7
+          // Intervals from I:
+          //   I=0, IV=5, Vm=7(minor), sIV(#IV)=6
+          //   IIIm7b5: III=4 (major 3rd above I, e.g. A above F)
+          //   VI7(dom): VI=9 (e.g. D7 above F)
+          //   IIm7: II=2 (e.g. Gm7 above F)
+          //   V7: V=7 (e.g. C7 above F)
+          const r = ni(k);
+          const I = NOTES[r % 12];
+          const IV = NOTES[(r + 5) % 12];   // Bb in F
+          const Vm = NOTES[(r + 7) % 12];   // C  in F  (plays as Cm7)
+          const V = NOTES[(r + 7) % 12];   // C  in F  (plays as C7)
+          const sIV = NOTES[(r + 6) % 12];   // B  in F  (#IVdim7 = Bdim7)
+          const III = NOTES[(r + 4) % 12];   // A  in F  (Am7b5)
+          const VI = NOTES[(r + 9) % 12];   // D  in F  (D7)
+          const II = NOTES[(r + 2) % 12];   // G  in F  (Gm7)
+          return [
+            `${I}7`, `${I}7`, `${IV}7`, `${IV}7`,
+            `${I}7`, `${I}7`, `${Vm}m7`, `${I}7`,
+            `${IV}7`, `${IV}7`, `${sIV}dim7`, `${sIV}dim7`,
+            `${I}7`, `${I}7`, `${III}m7b5`, `${VI}7`,
+            `${II}m7`, `${II}m7`, `${V}7`, `${V}7`,
+            `${I}7`, `${VI}7`, `${II}m7`, `${V}7`
+          ];
+        },
+        'rhythm': k => { const r = ni(k), VI = NOTES[(r + 9) % 12], II = NOTES[(r + 2) % 12], V = NOTES[(r + 7) % 12], b3 = NOTES[(r + 3) % 12], b6 = NOTES[(r + 8) % 12], b2 = NOTES[(r + 1) % 12]; return [`${k}6`, `${VI}7`, `${II}m7`, `${V}7`, `${b3}7`, `${b6}7`, `${b2}7`, `${V}7`]; }
+      };
+
+      // ── Jazz Standards ──────────────────────────────────────
+      // homeKey = original key used here. chords stored as-is and transposed at runtime.
+      const STD_BUILT = [
+        {
+          id: 'fly_me_to_moon', name: 'Fly Me to the Moon', composer: 'Bart Howard', homeKey: 'C', dispKey: 'C (Am)',
+          chords: ['Am7', 'Dm7', 'G7', 'Cmaj7', 'Fmaj7', 'Bm7b5', 'E7', 'Am7', 'Dm7', 'G7', 'Cmaj7', 'Am7', 'Dm7', 'G7', 'C', 'E7']
+        },
+        {
+          id: 'all_of_me', name: 'All of Me', composer: 'Gerald Marks', homeKey: 'C', dispKey: 'C',
+          chords: ['C', 'E7', 'A7', 'Dm', 'E7', 'Am', 'D7', 'G7', 'C', 'E7', 'A7', 'Dm', 'F', 'Fm', 'C', 'G7']
+        },
+        {
+          id: 'autumn_leaves', name: 'Autumn Leaves', composer: 'Joseph Kosma', homeKey: 'Bb', dispKey: 'Bb (Gm)',
+          chords: ['Cm7', 'F7', 'Bbmaj7', 'Ebmaj7', 'Am7b5', 'D7', 'Gm', 'Gm', 'Cm7', 'F7', 'Bbmaj7', 'Ebmaj7', 'Am7b5', 'D7', 'Gm', 'D7']
+        },
+        {
+          id: 'blue_bossa', name: 'Blue Bossa', composer: 'Kenny Dorham', homeKey: 'Eb', dispKey: 'Eb (Cm)',
+          chords: ['Cm7', 'Cm7', 'Fm7', 'Fm7', 'Dm7b5', 'G7', 'Cm7', 'Cm7', 'Ebm7', 'Ab7', 'Dbmaj7', 'Dbmaj7', 'Dm7b5', 'G7', 'Cm7', 'G7']
+        },
+        {
+          id: 'take_a_train', name: 'Take the A Train', composer: 'Billy Strayhorn', homeKey: 'C', dispKey: 'C',
+          chords: ['C6', 'C6', 'D7', 'D7', 'Dm7', 'G7', 'Em7', 'A7', 'Dm7', 'G7', 'C6', 'A7', 'Dm7', 'G7']
+        }
+      ];
+      // User overrides for standards (stored in localStorage)
+      let stdOverrides = {};
+      let stdEditId = null;
+
+      function getStd(id) {
+        if (stdOverrides[id]) return stdOverrides[id];
+        return STD_BUILT.find(s => s.id === id) || null;
+      }
+      function transposeStd(std, targetKey) {
+        const semis = (ni(targetKey) - ni(std.homeKey) + 12) % 12;
+        if (semis === 0) return std.chords;
+        return std.chords.map(c => transposeChord(c, semis));
+      }
+      function renderStandardsList() {
+        const cont = el('el-standards-list'); if (!cont) return;
+        const tk = (curKey === 'random' || !curKey) ? 'C' : curKey;
+        cont.innerHTML = '';
+        STD_BUILT.forEach(base => {
+          const std = getStd(base.id);
+          const preview = transposeStd(std, tk).slice(0, 6).map(fmtChord).join(' → ') + ' …';
+          const item = document.createElement('div');
+          item.className = 'prog-item' + (curProgId === base.id ? ' on' : '');
+          item.dataset.pid = base.id;
+          const info = document.createElement('div');
+          info.style.cssText = 'flex:1;min-width:0';
+          info.innerHTML = `<div class="prog-name">♻ ${std.name} <span style="font-size:9px;color:var(--tx3)">(${std.dispKey})</span></div><div class="prog-sub">${preview}</div>`;
+          info.addEventListener('click', () => {
+            document.querySelectorAll('.prog-item').forEach(p => p.classList.remove('on'));
+            item.classList.add('on');
+            curProgId = base.id;
+            if (running) { stopPlay(); paused = false; chordList = buildList(); chordPos = 0; beatCount = 0; startPlay(); }
+            refreshProgPreviews();
+          });
+          const acts = document.createElement('div'); acts.className = 'prog-acts';
+          const eb = document.createElement('button'); eb.className = 'pact-btn'; eb.textContent = '수정';
+          eb.addEventListener('click', ev => { ev.stopPropagation(); openStdEdit(base.id); });
+          // Reset button (only if overridden)
+          if (stdOverrides[base.id]) {
+            const rb = document.createElement('button'); rb.className = 'pact-btn'; rb.textContent = '초기화'; rb.style.color = 'var(--ac)';
+            rb.addEventListener('click', ev => { ev.stopPropagation(); delete stdOverrides[base.id]; persistStdOverrides(); renderStandardsList(); });
+            acts.appendChild(rb);
+          }
+          acts.appendChild(eb);
+          item.append(info, acts);
+          cont.appendChild(item);
+        });
+      }
+      function openStdEdit(id) {
+        const std = getStd(id); if (!std) return;
+        stdEditId = id;
+        el('inp-sname').value = std.name;
+        el('inp-schords').value = std.chords.join(', ');
+        el('std-edit-wrap').style.display = '';
+        el('std-form-lbl').textContent = '수정: ' + std.name;
+        el('inp-sname').focus();
+        // Open the panel if closed
+        const panel = el('panel-standards');
+        if (!panel.classList.contains('open')) panel.classList.add('open');
+      }
+      function saveStdEdit() {
+        if (!stdEditId) return;
+        const base = STD_BUILT.find(s => s.id === stdEditId); if (!base) return;
+        const name = el('inp-sname').value.trim() || base.name;
+        const raw = el('inp-schords').value.trim();
+        if (!raw) { cancelStdEdit(); return; }
+        const chords = raw.split(',').map(s => s.trim()).filter(Boolean);
+        stdOverrides[stdEditId] = { ...base, name, chords };
+        persistStdOverrides();
+        cancelStdEdit();
+        renderStandardsList();
+        refreshProgPreviews();
+      }
+      function cancelStdEdit() {
+        stdEditId = null;
+        el('std-edit-wrap').style.display = 'none';
+        el('inp-sname').value = ''; el('inp-schords').value = '';
+      }
+      function persistStdOverrides() { try { localStorage.setItem('gp_std_v1', JSON.stringify(stdOverrides)); } catch (e) { } }
+      function loadStdOverrides() { try { const r = localStorage.getItem('gp_std_v1'); if (r) stdOverrides = JSON.parse(r); } catch (e) { } }
+
+      // ── State ────────────────────────────────────────────────
+      let curKey = 'random', curProgId = '251';
+      let chordList = [], chordPos = 0;
+      let running = false, paused = false;
+      let ticker = null, beatCount = 0;
+      let accompOn = false, bpm = 80;
+      let editingId = null, customProgs = {};
+      let isDark = true;
+      // Metro config: per-beat on/off and accent position
+      const metro = { vol: 0.60, beats: [], accent: 0 };
+      // beats[] is built by buildBeatDots, each entry: {on:true, isAccent:false}
+      const roleShow = { root: true, third: true, fifth: true, seventh: true };
+      let showNextGhost = false;
+      let scaleOn = false, curScaleName = 'major', customScaleIvls = [0, 2, 4, 5, 7, 9, 11];
+      let savedScales = {};
+      const acfg = { vol: 0.70, strum: 1, arp: 'none', roleVol: { root: 1, third: 1, fifth: 1, seventh: 1, other: 1 } };
+
+      // Voicing state
+      const VOICING_TEMPLATES = {
+        'shell_6': [{ name: 'Root Pos', strings: { 5: 'root', 3: 'seventh', 2: 'third' } }],
+        'shell_5': [{ name: 'Root Pos', strings: { 4: 'root', 3: 'third', 2: 'seventh' } }],
+        'drop2_14': [
+          { name: 'Root Pos', strings: { 3: 'root', 2: 'fifth', 1: 'seventh', 0: 'third' } },
+          { name: '1st Inv', strings: { 3: 'third', 2: 'seventh', 1: 'root', 0: 'fifth' } },
+          { name: '2nd Inv', strings: { 3: 'fifth', 2: 'root', 1: 'third', 0: 'seventh' } },
+          { name: '3rd Inv', strings: { 3: 'seventh', 2: 'third', 1: 'fifth', 0: 'root' } }
+        ],
+        'drop2_25': [
+          { name: 'Root Pos', strings: { 4: 'root', 3: 'fifth', 2: 'seventh', 1: 'third' } },
+          { name: '1st Inv', strings: { 4: 'third', 3: 'seventh', 2: 'root', 1: 'fifth' } },
+          { name: '2nd Inv', strings: { 4: 'fifth', 3: 'root', 2: 'third', 1: 'seventh' } },
+          { name: '3rd Inv', strings: { 4: 'seventh', 3: 'third', 2: 'fifth', 1: 'root' } }
+        ],
+        'drop3_26': [
+          { name: 'Root Pos', strings: { 5: 'root', 3: 'seventh', 2: 'third', 1: 'fifth' } },
+          { name: '1st Inv', strings: { 5: 'third', 3: 'root', 2: 'fifth', 1: 'seventh' } },
+          { name: '2nd Inv', strings: { 5: 'fifth', 3: 'third', 2: 'seventh', 1: 'root' } },
+          { name: '3rd Inv', strings: { 5: 'seventh', 3: 'fifth', 2: 'root', 1: 'third' } }
+        ]
+      };
+      let voicingMode = false, voicingType = 'shell_6', voicingInv = 0, currentVoicingList = [];
+
+      // ── Helpers ──────────────────────────────────────────────
+      function ni(note) { return N2I[note] ?? 0; }
+      function el(id) { return document.getElementById(id); }
+      function noteToFreq(name, oct) { return 440 * Math.pow(2, (ni(name) - 9 + (oct - 4) * 12) / 12); }
+      function randKey() { return NOTES[Math.floor(Math.random() * 12)]; }
+      function realKey() { return curKey === 'random' ? randKey() : curKey; }
+
+      function parseChord(str) {
+        if (!str || str === '—') return { root: 'C', type: 'maj' };
+        const roots = ['Db', 'Eb', 'F#', 'Ab', 'Bb', 'C#', 'D#', 'Gb', 'G#', 'A#', 'C', 'D', 'E', 'F', 'G', 'A', 'B'];
+        for (const r of roots) {
+          if (str.startsWith(r)) { const rest = str.slice(r.length) || 'maj'; return { root: r, type: IVLS[rest] ? rest : 'maj' }; }
+        }
+        return { root: 'C', type: 'maj' };
+      }
+      function fmtChord(str) {
+        if (!str || str === '—') return '—';
+        const { root, type } = parseChord(str); return root + (CHORD_LBL[type] ?? '');
+      }
+      function chordNotes(root, type) {
+        const r = ni(root);
+        return (IVLS[type] || [0, 4, 7]).map(iv => ({ note: NOTES[(r + iv) % 12], interval: iv % 12, semitones: iv }));
+      }
+      function transposeChord(str, semis) {
+        const { root, type } = parseChord(str);
+        return NOTES[(ni(root) + semis + 120) % 12] + (type === 'maj' ? '' : type);
+      }
+      function detectHomeKey(chords) {
+        if (!chords.length) return 'C';
+        return parseChord(chords[chords.length - 1]).root;
+      }
+      function transposeCustomProg(prog, targetKey) {
+        if (!prog.transposable) return prog.chords;
+        const homeRoot = prog.homeKey || detectHomeKey(prog.chords);
+        const semis = (ni(targetKey) - ni(homeRoot) + 12) % 12;
+        if (semis === 0) return prog.chords;
+        return prog.chords.map(c => transposeChord(c, semis));
+      }
+
+      // Current scale intervals relative to curKey (or displayed key)
+      function getScaleIntervals() {
+        if (curScaleName === 'custom') return customScaleIvls;
+        return SCALES[curScaleName] || SCALES.major;
+      }
+      // Returns Set of note indices (0-11) in the scale for a given root
+      function scaleNoteSet(rootNote) {
+        const r = ni(rootNote);
+        const ivls = getScaleIntervals();
+        return new Set(ivls.map(iv => (r + iv) % 12));
+      }
+
+      // ── Chord list ───────────────────────────────────────────
+      function buildList() {
+        const k = realKey();
+        if (curProgId === 'random') {
+          const types = activeTypes(); if (!types.length) return ['C'];
+          return Array.from({ length: 24 }, () => {
+            const rk = curKey === 'random' ? randKey() : curKey;
+            const t = types[Math.floor(Math.random() * types.length)];
+            return rk + (t === 'maj' ? '' : t);
+          });
+        }
+        if (BUILT_IN[curProgId]) return BUILT_IN[curProgId](k);
+        if (customProgs[curProgId]) {
+          const prog = customProgs[curProgId];
+          const tk = curKey === 'random' ? randKey() : curKey;
+          return transposeCustomProg(prog, tk);
+        }
+        // Standards
+        const std = getStd(curProgId);
+        if (std) {
+          const tk = curKey === 'random' ? randKey() : curKey;
+          return transposeStd(std, tk);
+        }
+        return ['C'];
+      }
+      function activeTypes() { return [...document.querySelectorAll('.ctbtn.on')].map(b => b.dataset.t); }
+
+      // ── Audio ────────────────────────────────────────────────
+      let audioCtx = null;
+      function getAC() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+      }
+      function playEPiano(freq, t, dur, vol) {
+        const ac = getAC(), master = ac.createGain();
+        master.connect(ac.destination);
+        master.gain.setValueAtTime(0, t);
+        master.gain.linearRampToValueAtTime(vol, t + 0.015);
+        master.gain.setTargetAtTime(vol * 0.55, t + 0.06, 0.18);
+        master.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        [{ m: 1, d: 0, a: 1 }, { m: 2, d: 3, a: 0.35 }, { m: 3, d: -2, a: 0.18 }, { m: 4, d: 5, a: 0.09 }].forEach(({ m, d, a }) => {
+          const o = ac.createOscillator(), g = ac.createGain();
+          o.type = 'sine'; o.frequency.value = freq * m; o.detune.value = d; g.gain.value = a;
+          o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.1);
+        });
+      }
+      function playGuitar(freq, t, dur, vol) {
+        const ac = getAC(), filt = ac.createBiquadFilter(), master = ac.createGain();
+        filt.type = 'lowpass'; filt.frequency.value = 2400;
+        filt.connect(master); master.connect(ac.destination);
+        master.gain.setValueAtTime(0, t); master.gain.linearRampToValueAtTime(vol, t + 0.012);
+        master.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        const o1 = ac.createOscillator(), o2 = ac.createOscillator(), g2 = ac.createGain();
+        o1.type = 'triangle'; o1.frequency.value = freq;
+        o2.type = 'sine'; o2.frequency.value = freq * 2; g2.gain.value = 0.08;
+        o1.connect(filt); o2.connect(g2); g2.connect(filt);
+        o1.start(t); o1.stop(t + dur + 0.05); o2.start(t); o2.stop(t + dur + 0.05);
+      }
+      function playTone(freq, t, dur, vol) {
+        playGuitar(freq, t, dur, vol);
+      }
+      function playClick(t, accent) {
+        const ac = getAC(), o = ac.createOscillator(), g = ac.createGain();
+        o.type = 'sine'; o.frequency.value = accent ? 1200 : 880;
+        o.connect(g); g.connect(ac.destination);
+        const baseVol = metro.vol;
+        g.gain.setValueAtTime(accent ? baseVol * 0.46 : baseVol * 0.18, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+        o.start(t); o.stop(t + 0.08);
+      }
+
+      function buildFreqs(str) {
+        const { root, type } = parseChord(str); const ri = ni(root);
+        return (IVLS[type] || [0, 4, 7]).map((iv, i) => {
+          const idx = (ri + iv) % 12, name = NOTES[idx];
+          const oct = 3 + Math.floor((ri + iv) / 12);
+          const role = ROLE_OF[iv % 12] ?? 'other';
+          const rv = acfg.roleVol[role] ?? 1;
+          const vol = acfg.vol * 0.13 * rv;
+          return { freq: noteToFreq(name, oct), vol, role };
+        }).filter(x => x.vol > 0.001);
+      }
+
+      function playChordAt(str, t, dur, msPerBeat) {
+        const freqs = buildFreqs(str);
+        if (acfg.arp === 'none') {
+          freqs.forEach((f, i) => playTone(f.freq, t + i * 0.018, dur, f.vol));
+        } else {
+          const list = acfg.arp === 'down' ? [...freqs].reverse() : freqs;
+          let step = msPerBeat ? (msPerBeat / 1000) / 2 : 0.15;
+          if (step * list.length > dur) {
+            step = dur / list.length;
+          }
+          list.forEach((f, i) => {
+            const noteStart = t + i * step;
+            const noteDur = Math.max(0.3, dur - i * step);
+            playTone(f.freq, noteStart, noteDur, f.vol);
+          });
+        }
+      }
+
+      // ── Display ──────────────────────────────────────────────
+      function refreshDisplay() {
+        const cur = chordList[chordPos] ?? '—';
+        const len = chordList.length;
+        const prv = len ? chordList[(chordPos - 1 + len) % len] : '—';
+        const nxt = len ? chordList[(chordPos + 1) % len] : '—';
+        const ce = el('el-curr');
+        ce.textContent = fmtChord(cur);
+        ce.classList.remove('chord-pop'); void ce.offsetWidth; ce.classList.add('chord-pop');
+        el('el-prev').textContent = fmtChord(prv);
+        el('el-next').textContent = fmtChord(nxt);
+        const nr = el('el-notes'); nr.innerHTML = '';
+        if (cur !== '—') {
+          const { root, type } = parseChord(cur);
+          chordNotes(root, type).forEach(n => {
+            const role = ROLE_OF[n.interval] ?? 'other';
+            const p = document.createElement('div');
+            p.className = `npill ${role}`; p.textContent = n.note; nr.appendChild(p);
+          });
+        }
+        refreshQueue();
+        if (voicingMode) {
+          const isChordChange = (cur !== window.__gp_last_displayed_chord);
+          updateVoicings(isChordChange);
+        }
+        drawFB();
+        window.__gp_last_displayed_chord = cur;
+      }
+
+      function calculateVoicings(chordStr, vtype) {
+        if (!chordStr || chordStr === '—') return [];
+        const { root, type } = parseChord(chordStr);
+        const notes = chordNotes(root, type);
+        const roleToNoteIdx = {};
+        notes.forEach(n => {
+          const r = ROLE_OF[n.interval] ?? 'other';
+          if (r !== 'other') roleToNoteIdx[r] = N2I[n.note];
+        });
+        const templates = VOICING_TEMPLATES[vtype];
+        if (!templates) return [];
+        let allFound = [];
+        const tf = parseInt(el('sel-frets').value);
+        templates.forEach((tmpl) => {
+          const strMap = tmpl.strings;
+          const strings = Object.keys(strMap).map(Number).sort((a, b) => b - a);
+          const bassStr = strings[0];
+          const bassRole = strMap[bassStr];
+          const bassTargetIdx = roleToNoteIdx[bassRole];
+          if (bassTargetIdx === undefined) return;
+          for (let f = 0; f <= tf; f++) {
+            if (((STR_MIDI[bassStr] + f) % 12) === bassTargetIdx) {
+              const voicing = [{ str: bassStr, fret: f, role: bassRole, noteName: NOTES[bassTargetIdx] }];
+              let valid = true;
+              let minF = f, maxF = f;
+              for (let i = 1; i < strings.length; i++) {
+                const s = strings[i];
+                const role = strMap[s];
+                const targetIdx = roleToNoteIdx[role];
+                if (targetIdx === undefined) { valid = false; break; }
+                let bestF = -1, bestDist = 999;
+                for (let pf = Math.max(0, f - 4); pf <= Math.min(tf + 4, f + 5); pf++) {
+                  if (((STR_MIDI[s] + pf) % 12) === targetIdx) {
+                    const d = Math.abs(pf - f);
+                    if (d < bestDist) { bestDist = d; bestF = pf; }
+                  }
+                }
+                if (bestDist > 5) { valid = false; break; }
+                voicing.push({ str: s, fret: bestF, role: role, noteName: NOTES[targetIdx] });
+                minF = Math.min(minF, bestF); maxF = Math.max(maxF, bestF);
+              }
+              if (valid && (maxF - minF) <= 5) allFound.push({ frets: voicing, invName: tmpl.name, avgFret: (minF + maxF) / 2 });
+            }
+          }
+        });
+        allFound.sort((a, b) => a.avgFret - b.avgFret);
+        return allFound;
+      }
+      function updateVoicings(autoLead = false) {
+        if (!voicingMode) return;
+        const oldAvg = (autoLead && currentVoicingList[voicingInv]) ? currentVoicingList[voicingInv].avgFret : null;
+        currentVoicingList = calculateVoicings(chordList[chordPos], voicingType);
+
+        if (oldAvg !== null && currentVoicingList.length > 0) {
+          let bestInv = 0, bestDist = 999;
+          currentVoicingList.forEach((v, idx) => {
+            const dist = Math.abs(v.avgFret - oldAvg);
+            if (dist < bestDist) { bestDist = dist; bestInv = idx; }
+          });
+          voicingInv = bestInv;
+        } else {
+          voicingInv = Math.max(0, Math.min(voicingInv, currentVoicingList.length - 1));
+        }
+
+        const invEl = el('el-v-inv');
+        if (currentVoicingList.length) {
+          invEl.innerHTML = `${voicingInv + 1}/${currentVoicingList.length}<br><span style="font-size:7px">${currentVoicingList[voicingInv].invName}</span>`;
+          el('btn-v-play').disabled = false;
+        } else {
+          invEl.innerHTML = `0/0`;
+          el('btn-v-play').disabled = true;
+        }
+      }
+      function toggleVoicingMode() {
+        voicingMode = el('tog-voicing').checked;
+        const dis = !voicingMode;
+        el('sel-voicing-type').disabled = dis; el('btn-v-prev').disabled = dis; el('btn-v-next').disabled = dis;
+        el('btn-v-play').disabled = dis || currentVoicingList.length === 0;
+        if (voicingMode) updateVoicings(); drawFB();
+      }
+      function changeVoicingType() { voicingType = el('sel-voicing-type').value; voicingInv = 0; updateVoicings(); drawFB(); }
+      function prevVoicingInv() { if (currentVoicingList.length) voicingInv = (voicingInv - 1 + currentVoicingList.length) % currentVoicingList.length; updateVoicings(); drawFB(); }
+      function nextVoicingInv() { if (currentVoicingList.length) voicingInv = (voicingInv + 1) % currentVoicingList.length; updateVoicings(); drawFB(); }
+      function playCurrentVoicing() {
+        if (!currentVoicingList[voicingInv]) return;
+        const ac = getAC(); const t0 = ac.currentTime;
+        currentVoicingList[voicingInv].frets.forEach((n, i) => {
+          const midi = STR_MIDI[n.str] + n.fret;
+          const freq = 440 * Math.pow(2, (midi - 69) / 12);
+          if (acfg.timbre === 'piano') playEPiano(freq, t0 + i * 0.015, 1.5, 0.4);
+          else playGuitar(freq, t0 + i * 0.015, 1.5, 0.4);
+        });
+      }
+
+
+
+      function refreshQueue() {
+        const strip = el('el-queue'); strip.innerHTML = '';
+        const len = chordList.length;
+        for (let i = Math.max(0, chordPos - 2); i < Math.min(len, chordPos + 8); i++) {
+          const c = document.createElement('div');
+          c.className = 'qchip' + (i === chordPos ? ' cur' : i === chordPos + 1 ? ' next' : '');
+          c.textContent = fmtChord(chordList[i]); strip.appendChild(c);
+        }
+      }
+
+      function refreshTypeDisp() {
+        const a = activeTypes(); el('el-typedisp').textContent = a.length ? a.join('  ') : '(없음)';
+      }
+
+      function refreshProgPreviews() {
+        const k = (curKey === 'random' || !curKey) ? 'C' : curKey;
+        ['251', '1625', '1451', 'blues', 'rhythm'].forEach(id => {
+          const e = el('pc-' + id); if (e && BUILT_IN[id]) e.textContent = BUILT_IN[id](k).map(fmtChord).join(' → ');
+        });
+        const efb = el('pc-fblues');
+        if (efb && BUILT_IN['fblues']) efb.textContent = BUILT_IN['fblues'](k).slice(0, 6).map(fmtChord).join(' → ') + ' …';
+        const tk = (curKey === 'random' || !curKey) ? 'C' : curKey;
+        Object.entries(customProgs).forEach(([id, prog]) => {
+          const pe = document.querySelector(`[data-pid="${id}"] .prog-sub`);
+          if (!pe) return;
+          pe.textContent = transposeCustomProg(prog, tk).map(fmtChord).join(' → ');
+        });
+        renderStandardsList();
+      }
+
+      function refreshCustomProgs() {
+        const cont = el('el-custom-progs'); cont.innerHTML = '';
+        const tk = (curKey === 'random' || !curKey) ? 'C' : curKey;
+        Object.entries(customProgs).forEach(([id, prog]) => {
+          const item = document.createElement('div');
+          item.className = 'prog-item' + (curProgId === id ? ' on' : '');
+          item.dataset.pid = id;
+          const preview = transposeCustomProg(prog, tk).map(fmtChord).join(' → ');
+          const info = document.createElement('div');
+          info.style.cssText = 'flex:1;min-width:0';
+          info.innerHTML = `<div class="prog-name">${prog.name}${prog.transposable ? ' <span style="font-size:9px;color:var(--ac)">♻</span>' : ''}</div><div class="prog-sub">${preview}</div>`;
+          info.addEventListener('click', () => selectProgItem(item));
+          const acts = document.createElement('div'); acts.className = 'prog-acts';
+          const eb = document.createElement('button'); eb.className = 'pact-btn'; eb.textContent = '수정';
+          eb.addEventListener('click', ev => { ev.stopPropagation(); startEditProg(id); });
+          const db = document.createElement('button'); db.className = 'pact-btn del'; db.textContent = '✕';
+          db.addEventListener('click', ev => { ev.stopPropagation(); deleteCustomProg(id); });
+          acts.append(eb, db); item.append(info, acts); cont.appendChild(item);
+        });
+      }
+
+      // ── Transport ────────────────────────────────────────────
+      function togglePlay() {
+        if (running) {
+          stopPlay();
+        } else {
+          // If paused, resume from current position; else start fresh
+          if (!paused) { chordList = buildList(); chordPos = 0; beatCount = 0; }
+          startPlay();
+        }
+      }
+
+      function togglePause() {
+        if (!running) return;
+        paused = true;
+        running = false;
+        if (ticker) { clearInterval(ticker); ticker = null; }
+        document.querySelectorAll('.bdot').forEach(d => d.classList.remove('on', 'accent'));
+        el('btn-play').textContent = '▶ 재개';
+        el('btn-play').classList.replace('danger', 'primary');
+        el('btn-pause').style.display = 'none';
+      }
+
+      function startPlay() {
+        running = true;
+        el('btn-play').textContent = '■ 정지';
+        el('btn-play').classList.replace('primary', 'danger');
+        el('btn-pause').style.display = '';
+        if (!paused) refreshDisplay();
+        paused = false;
+        scheduleTick();
+      }
+
+      function stopPlay() {
+        running = false; paused = false;
+        if (ticker) { clearInterval(ticker); ticker = null; }
+        el('btn-play').textContent = '▶ 시작';
+        el('btn-play').classList.replace('danger', 'primary');
+        el('btn-pause').style.display = 'none';
+        document.querySelectorAll('.bdot').forEach(d => d.classList.remove('on', 'accent'));
+      }
+
+      function scheduleTick() {
+        if (ticker) clearInterval(ticker);
+        const bpb = parseInt(el('sel-beats').value);
+        const bpc = parseInt(el('sel-bars').value);
+        const ms = 60000 / bpm;
+        const changeEvery = bpb * bpc;
+        ticker = setInterval(() => {
+          if (!running) return;
+          const beat = beatCount % bpb;
+          document.querySelectorAll('.bdot').forEach((d, i) => {
+            d.classList.remove('on', 'playing');
+            if (i === beat) d.classList.add('playing');
+          });
+          if (el('tog-metro').checked) {
+            const bdata = metro.beats[beat];
+            if (bdata && bdata.on) {
+              playClick(getAC().currentTime, bdata.isAccent);
+            }
+          }
+          if (beatCount > 0 && beatCount % changeEvery === 0) {
+            chordPos = (chordPos + 1) % chordList.length;
+            if (curProgId === 'random' && chordPos === 0) chordList = buildList();
+            refreshDisplay();
+            if (accompOn) scheduleStrums(chordList[chordPos], changeEvery, ms);
+          }
+          if (beatCount === 0 && accompOn) scheduleStrums(chordList[0], changeEvery, ms);
+          beatCount++;
+        }, ms);
+      }
+
+      function scheduleStrums(str, totalBeats, msPerBeat) {
+        const strum = parseInt(el('sel-strum').value) || 1;
+        const totalSec = totalBeats * (msPerBeat / 1000) * 0.88;
+        const t0 = getAC().currentTime;
+        for (let s = 0; s < strum; s++) {
+          const offset = s * (totalBeats / strum) * (msPerBeat / 1000);
+          playChordAt(str, t0 + offset, totalSec / strum * 0.9, msPerBeat);
+        }
+      }
+
+      function prevChord() {
+        if (!chordList.length) { chordList = buildList(); chordPos = 0; }
+        else chordPos = (chordPos - 1 + chordList.length) % chordList.length;
+        refreshDisplay();
+      }
+      function nextChord() {
+        if (!chordList.length) { chordList = buildList(); chordPos = 0; }
+        else chordPos = (chordPos + 1) % chordList.length;
+        refreshDisplay();
+      }
+      function listenChord() {
+        if (!chordList.length) return;
+        const bpb = parseInt(el('sel-beats').value);
+        playChordAt(chordList[chordPos] || 'C', getAC().currentTime, bpb * (60 / bpm) * 1.4, 60000 / bpm);
+      }
+      function toggleAccomp() {
+        accompOn = !accompOn;
+        const btn = el('btn-accomp');
+        btn.classList.toggle('on', accompOn);
+        btn.innerHTML = accompOn ? '<span class="pulse-dot"></span>반주 중' : '🎸 반주';
+        if (running) { stopPlay(); paused = false; chordList = buildList(); chordPos = 0; beatCount = 0; startPlay(); }
+      }
+      function setBpm(v) { bpm = v; el('el-bpm').textContent = v; el('sl-bpm').value = v; if (running) scheduleTick(); }
+      function shiftBpm(d) { setBpm(Math.max(40, Math.min(240, bpm + d))); }
+
+      // ── Beat dots ────────────────────────────────────────────
+      function buildBeatDots() {
+        const n = parseInt(el('sel-beats').value);
+        // Rebuild metro.beats array (preserve existing settings if same length)
+        if (metro.beats.length !== n) {
+          metro.beats = Array.from({ length: n }, (_, i) => ({ on: true, isAccent: i === 0 }));
+          metro.accent = 0;
+        }
+        // Render beat dots in chord stage
+        el('el-beats').innerHTML = Array.from({ length: n }, (_, i) => {
+          const b = metro.beats[i];
+          const cls = 'bdot' + (b.isAccent ? ' accent-beat' : '') + (b.on ? '' : ' muted');
+          return `<div class="${cls}" id="bd-${i}" title="${i + 1}박">${i + 1}</div>`;
+        }).join('');
+        // Render interactive buttons in sidebar
+        renderMetroBeatBtns();
+      }
+      function renderMetroBeatBtns() {
+        const cont = el('metro-beat-btns'); if (!cont) return;
+        cont.innerHTML = '';
+        metro.beats.forEach((b, i) => {
+          const btn = document.createElement('div');
+          btn.style.cssText = `width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-family:'DM Mono',monospace;border:1.5px solid;transition:all .15s;user-select:none;`;
+          function updateStyle() {
+            if (b.isAccent) {
+              btn.style.background = 'var(--acd)'; btn.style.borderColor = 'var(--ac)'; btn.style.color = 'var(--ac)'; btn.style.fontWeight = '600';
+            } else if (b.on) {
+              btn.style.background = 'var(--bg3)'; btn.style.borderColor = 'var(--bdr2)'; btn.style.color = 'var(--tx2)'; btn.style.fontWeight = '400';
+            } else {
+              btn.style.background = 'transparent'; btn.style.borderColor = 'var(--bdr)'; btn.style.color = 'var(--tx3)'; btn.style.fontWeight = '400'; btn.style.opacity = '0.35';
+            }
+          }
+          updateStyle();
+          btn.textContent = i + 1;
+          let pressTimer = null;
+          btn.addEventListener('mousedown', () => {
+            pressTimer = setTimeout(() => {
+              // Long press → set as accent
+              pressTimer = null;
+              metro.beats.forEach((x, j) => { x.isAccent = (j === i); });
+              metro.accent = i;
+              metro.beats.forEach((_, j) => renderMetroBeatBtns());
+              buildBeatDots();
+            }, 500);
+          });
+          btn.addEventListener('mouseup', () => {
+            if (pressTimer !== null) {
+              clearTimeout(pressTimer); pressTimer = null;
+              // Short click → toggle on/off (can't mute accent)
+              if (!b.isAccent) { b.on = !b.on; }
+              updateStyle();
+              // also update stage dot
+              const sd = el('bd-' + i); if (sd) { sd.classList.toggle('muted', !b.on); }
+            }
+          });
+          btn.addEventListener('mouseleave', () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } });
+          // Touch support
+          btn.addEventListener('touchstart', ev => {
+            ev.preventDefault();
+            pressTimer = setTimeout(() => {
+              pressTimer = null;
+              metro.beats.forEach((x, j) => { x.isAccent = (j === i); });
+              metro.accent = i;
+              buildBeatDots();
+            }, 500);
+          });
+          btn.addEventListener('touchend', ev => {
+            ev.preventDefault();
+            if (pressTimer !== null) {
+              clearTimeout(pressTimer); pressTimer = null;
+              if (!b.isAccent) { b.on = !b.on; }
+              updateStyle();
+              const sd = el('bd-' + i); if (sd) { sd.classList.toggle('muted', !b.on); }
+            }
+          });
+          cont.appendChild(btn);
+        });
+      }
+
+      // ── Key ──────────────────────────────────────────────────
+      function setKey(btn) {
+        document.querySelectorAll('.kbtn').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on'); curKey = btn.dataset.key;
+        refreshProgPreviews(); refreshCustomProgs(); renderStandardsList();
+        if (running) { stopPlay(); paused = false; chordList = buildList(); chordPos = 0; beatCount = 0; startPlay(); }
+        else drawFB();
+      }
+
+      // ── Types ────────────────────────────────────────────────
+      function allTypes() { document.querySelectorAll('.ctbtn').forEach(b => b.classList.add('on')); refreshTypeDisp(); }
+      function noneTypes() { document.querySelectorAll('.ctbtn').forEach(b => b.classList.remove('on')); refreshTypeDisp(); }
+
+      // ── Prog selection ───────────────────────────────────────
+      function chooseProg(item) { selectProgItem(item); }
+      function selectProgItem(item) {
+        document.querySelectorAll('.prog-item').forEach(p => p.classList.remove('on'));
+        item.classList.add('on'); curProgId = item.dataset.pid;
+        if (running) { stopPlay(); paused = false; chordList = buildList(); chordPos = 0; beatCount = 0; startPlay(); }
+        refreshProgPreviews();
+      }
+
+      // ── Custom progs ─────────────────────────────────────────
+      function saveCustomProg() {
+        const name = el('inp-cname').value.trim(); const raw = el('inp-cchords').value.trim();
+        if (!name || !raw) return;
+        const chords = raw.split(',').map(s => s.trim()).filter(Boolean);
+        const transposable = el('chk-transposable').checked;
+        const homeKey = transposable ? detectHomeKey(chords) : null;
+        if (editingId) { customProgs[editingId] = { name, chords, transposable, homeKey }; cancelEdit(); }
+        else { customProgs['c' + Date.now()] = { name, chords, transposable, homeKey }; }
+        persistProgs(); el('inp-cname').value = ''; el('inp-cchords').value = ''; el('chk-transposable').checked = false;
+        refreshCustomProgs(); refreshProgPreviews();
+      }
+      function deleteCustomProg(id) {
+        delete customProgs[id]; persistProgs();
+        if (curProgId === id) { curProgId = '251'; document.querySelector('[data-pid="251"]')?.classList.add('on'); }
+        if (editingId === id) cancelEdit(); refreshCustomProgs();
+      }
+      function startEditProg(id) {
+        const p = customProgs[id]; if (!p) return;
+        editingId = id; el('inp-cname').value = p.name; el('inp-cchords').value = p.chords.join(', ');
+        el('chk-transposable').checked = p.transposable || false;
+        el('btn-save-prog').textContent = '✓ 수정 저장'; el('form-label').textContent = '커스텀 진행 수정'; el('inp-cname').focus();
+      }
+      function cancelEdit() { editingId = null; el('btn-save-prog').textContent = '+ 저장'; el('form-label').textContent = '커스텀 진행 저장'; }
+      function persistProgs() { try { localStorage.setItem('gp_v5', JSON.stringify(customProgs)); } catch (e) { } }
+      function loadProgs() { try { const r = localStorage.getItem('gp_v5'); if (r) customProgs = JSON.parse(r); } catch (e) { } refreshCustomProgs(); }
+
+      // ── Panel ────────────────────────────────────────────────
+      function togglePanel(id) { document.getElementById(id).classList.toggle('open'); }
+
+      // ── Role toggles ─────────────────────────────────────────
+      function toggleRole(btn) {
+        const r = btn.dataset.role; roleShow[r] = !roleShow[r]; btn.classList.toggle('off', !roleShow[r]); drawFB();
+      }
+      function toggleNextGhost(btn) {
+        showNextGhost = !showNextGhost; btn.classList.toggle('off', !showNextGhost); drawFB();
+      }
+
+      // ── Theme ────────────────────────────────────────────────
+      function toggleTheme() {
+        isDark = !isDark;
+        document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+        el('btn-theme').textContent = isDark ? '☀ 라이트' : '🌙 다크';
+        drawFB();
+      }
+
+      // ── Scale modal ──────────────────────────────────────────
+      function openScaleModal() { el('modal-scale').classList.add('open'); updateScaleDisp(); }
+      function closeScaleModal() {
+        scaleOn = el('chk-scale-on').checked;
+        curScaleName = el('sel-scale').value;
+        drawFB();
+        el('modal-scale').classList.remove('open');
+        // update button appearance
+        el('btn-scale-show').classList.toggle('off', !scaleOn);
+      }
+      function onScaleChange() {
+        curScaleName = el('sel-scale').value;
+        el('custom-scale-row').style.display = curScaleName === 'custom' ? '' : 'none';
+        updateScaleDisp(); drawFB();
+      }
+      function updateScaleDisp() {
+        const name = el('sel-scale').value;
+        const ivls = SCALES[name] || customScaleIvls;
+        el('scale-intervals-disp').textContent = `반음: ${ivls.join(', ')} — ${SCALE_NOTES_LBL[name] || ''}`;
+      }
+      function applyCustomScale() {
+        const raw = el('inp-custom-scale').value;
+        const ivls = raw.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n >= 0 && n < 12);
+        if (!ivls.length) return;
+        customScaleIvls = [...new Set(ivls)].sort((a, b) => a - b);
+        SCALES.custom = customScaleIvls;
+        el('sel-scale').value = 'custom'; curScaleName = 'custom';
+        updateScaleDisp(); drawFB();
+      }
+      function saveCustomScale() {
+        const name = el('inp-custom-scale-name').value.trim() || '커스텀' + Date.now();
+        const raw = el('inp-custom-scale').value;
+        const ivls = raw.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n >= 0 && n < 12);
+        if (!ivls.length) return;
+        savedScales[name] = ivls;
+        try { localStorage.setItem('gp_scales', JSON.stringify(savedScales)); } catch (e) { }
+        renderSavedScales();
+      }
+      function renderSavedScales() {
+        const cont = el('saved-scales-list'); cont.innerHTML = '';
+        Object.entries(savedScales).forEach(([name, ivls]) => {
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:4px;padding:5px 8px;background:var(--bg3);border-radius:var(--rs);border:0.5px solid var(--bdr)';
+          row.innerHTML = `<span style="font-size:11px;flex:1;color:var(--tx2)">${name}</span><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--tx3)">${ivls.join(',')}</span>`;
+          const lb = document.createElement('button'); lb.className = 'btn xs'; lb.textContent = '적용';
+          lb.addEventListener('click', () => {
+            customScaleIvls = ivls; SCALES.custom = ivls;
+            el('inp-custom-scale').value = ivls.join(',');
+            el('sel-scale').value = 'custom'; curScaleName = 'custom';
+            updateScaleDisp(); drawFB();
+          });
+          const db = document.createElement('button'); db.className = 'btn xs'; db.textContent = '✕'; db.style.color = 'var(--red)';
+          db.addEventListener('click', () => { delete savedScales[name]; try { localStorage.setItem('gp_scales', JSON.stringify(savedScales)); } catch (e) { } renderSavedScales(); });
+          row.append(lb, db); cont.appendChild(row);
+        });
+      }
+
+      // ── Fretboard ────────────────────────────────────────────
+      let flashDots = [];
+      function flashFretDot(str, fret, noteName) {
+        flashDots.push({ str, fret, noteName, t: Date.now() });
+        drawFB();
+        setTimeout(() => { flashDots = flashDots.filter(d => Date.now() - d.t < 600); drawFB(); }, 620);
+      }
+      function drawFB() {
+        const canvas = el('fb-canvas');
+        const W = canvas.parentElement.clientWidth || 600;
+        const tf = parseInt(el('sel-frets').value);
+        const pv = el('sel-pos').value;
+        const H = 210;
+        canvas.width = W; canvas.height = H;
+        const c = canvas.getContext('2d');
+        const PL = 30, PR = 10, PT = 30, PB = 20;
+        const fw = (W - PL - PR) / tf, sh = (H - PT - PB) / 5;
+        c.fillStyle = isDark ? '#161714' : '#f5f0e8'; c.fillRect(0, 0, W, H);
+        c.fillStyle = isDark ? 'rgba(180,140,80,0.04)' : 'rgba(180,140,80,0.08)';
+        c.beginPath();
+        if (c.roundRect) c.roundRect(PL, PT - 8, W - PL - PR, H - PT - PB + 16, 4); else c.rect(PL, PT - 8, W - PL - PR, H - PT - PB + 16);
+        c.fill();
+        for (let f = 0; f <= tf; f++) {
+          const x = PL + f * fw;
+          c.strokeStyle = f === 0 ? (isDark ? 'rgba(255,255,255,.28)' : 'rgba(0,0,0,.45)') : (isDark ? 'rgba(255,255,255,.09)' : 'rgba(0,0,0,.12)');
+          c.lineWidth = f === 0 ? 3 : .5; c.beginPath(); c.moveTo(x, PT - 8); c.lineTo(x, H - PB + 8); c.stroke();
+        }
+        for (let s = 0; s < 6; s++) {
+          const y = PT + s * sh;
+          c.strokeStyle = isDark ? `rgba(200,185,150,${.10 + s * .02})` : `rgba(90,70,30,${.25 + s * .04})`;
+          c.lineWidth = s < 2 ? .8 : s < 4 ? 1.4 : 2; c.beginPath(); c.moveTo(PL, y); c.lineTo(W - PR, y); c.stroke();
+        }
+        [3, 5, 7, 9, 12, 15, 17, 19, 21].forEach(f => {
+          if (f > tf) return; const x = PL + (f - .5) * fw;
+          c.fillStyle = isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.07)';
+          if (f === 12 || f === 24) { c.beginPath(); c.arc(x, PT + sh * 1.5, 5, 0, Math.PI * 2); c.fill(); c.beginPath(); c.arc(x, PT + sh * 3.5, 5, 0, Math.PI * 2); c.fill(); }
+          else { c.beginPath(); c.arc(x, PT + sh * 2.5, 5, 0, Math.PI * 2); c.fill(); }
+        });
+        c.fillStyle = isDark ? '#9a9890' : '#7a7870'; c.font = '9px DM Mono,monospace'; c.textAlign = 'center';
+        [3, 5, 7, 9, 12, 15, 17, 19, 22].forEach(f => { if (f <= tf) c.fillText(f, PL + (f - .5) * fw, H - 4); });
+        c.textAlign = 'right'; c.font = '10px DM Mono,monospace';
+        STR_NAME.forEach((n, i) => c.fillText(n, PL - 4, PT + i * sh + 4));
+
+        const fs = pv === 'all' ? 0 : parseInt(pv), fe = pv === 'all' ? tf : fs + 5;
+
+        // Current chord dots
+        const cur = chordList[chordPos];
+        const nxt = chordList[(chordPos + 1) % Math.max(1, chordList.length)];
+
+        // Scale note set (for displayed key)
+        const scaleKey = (curKey === 'random' || !curKey) ? 'C' : curKey;
+        const scaleSet = scaleOn ? scaleNoteSet(scaleKey) : null;
+
+        // Build chord note maps
+        function buildNmap(str) {
+          if (!str || str === '—') return {};
+          const { root, type } = parseChord(str); const notes = chordNotes(root, type); const m = {};
+          notes.forEach(n => { m[n.note] = n; const e = ENH[n.note]; if (e) m[e] = n; }); return m;
+        }
+        const nmap = buildNmap(cur);
+        const nextNmap = showNextGhost ? buildNmap(nxt) : {};
+
+        const curChordParsed = parseChord(cur);
+
+        const activeVoicing = voicingMode ? currentVoicingList[voicingInv] : null;
+
+        if (activeVoicing) {
+          c.beginPath();
+          activeVoicing.frets.forEach((n, i) => {
+            const x = n.fret === 0 ? PL - fw * .35 : PL + (n.fret - .5) * fw;
+            const y = PT + n.str * sh;
+            if (i === 0) c.moveTo(x, y); else c.lineTo(x, y);
+          });
+          c.strokeStyle = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+          c.lineWidth = 4;
+          c.lineJoin = 'round';
+          c.stroke();
+        }
+
+        for (let s = 0; s < 6; s++) {
+          for (let f = 0; f <= tf; f++) {
+            if (f < fs || f > fe) continue;
+            const noteIdx = ((STR_MIDI[s] + f) % 12 + 12) % 12;
+            const noteName = NOTES[noteIdx];
+            const match = nmap[noteName];
+            const nextMatch = nextNmap[noteName];
+            const inScale = scaleSet ? scaleSet.has(noteIdx) : false;
+
+            // Draw scale dot first (underneath)
+            if (inScale && !match && scaleOn) {
+              const x = f === 0 ? PL - fw * .35 : PL + (f - .5) * fw, y = PT + s * sh;
+              c.globalAlpha = 0.4;
+              c.beginPath(); c.arc(x, y, 6, 0, Math.PI * 2);
+              c.fillStyle = isDark ? 'rgba(160,158,150,0.25)' : 'rgba(100,98,90,0.2)'; c.fill();
+              c.strokeStyle = isDark ? 'rgba(160,158,150,0.5)' : 'rgba(100,98,90,0.4)'; c.lineWidth = 0.8; c.stroke();
+              c.globalAlpha = 1;
+              c.fillStyle = isDark ? 'rgba(180,178,170,0.7)' : 'rgba(80,78,70,0.65)';
+              c.font = '8px DM Mono,monospace'; c.textAlign = 'center';
+              c.fillText(noteName, x, y + 3);
+            }
+
+            // Draw next chord ghost
+            if (nextMatch && !match && showNextGhost) {
+              const role = ROLE_OF[nextMatch.interval] ?? 'other';
+              if (role !== 'other') {
+                const x = f === 0 ? PL - fw * .35 : PL + (f - .5) * fw, y = PT + s * sh;
+                c.globalAlpha = 0.22;
+                c.beginPath(); c.arc(x, y, 9, 0, Math.PI * 2);
+                c.fillStyle = ROLE_COL[role]; c.fill(); c.globalAlpha = 1;
+              }
+            }
+
+            // Draw current chord dot
+            if (match) {
+              if (activeVoicing) {
+                const inVoicing = activeVoicing.frets.some(v => v.str === s && v.fret === f);
+                if (!inVoicing) continue;
+              }
+              const role = ROLE_OF[match.interval] ?? 'other';
+              if (role === 'other') continue;
+              if (!roleShow[role]) continue;
+              const x = f === 0 ? PL - fw * .35 : PL + (f - .5) * fw, y = PT + s * sh;
+              const col = ROLE_COL[role], rad = role === 'root' ? 11 : 9;
+              if (role === 'root') { c.shadowColor = col; c.shadowBlur = 12; }
+              c.beginPath(); c.arc(x, y, rad, 0, Math.PI * 2); c.fillStyle = col; c.fill(); c.shadowBlur = 0;
+              c.strokeStyle = 'rgba(0,0,0,.45)'; c.lineWidth = 1; c.stroke();
+              c.fillStyle = '#fff'; c.textAlign = 'center';
+              c.font = `${role === 'root' ? 'bold ' : ''}9px DM Mono,monospace`;
+              c.fillText(match.note, x, y + 3.5);
+            }
+          }
+        }
+        // Flash dots (clicked frets)
+        const now = Date.now();
+        flashDots.forEach(d => {
+          const age = now - d.t; if (age > 600) return;
+          const alpha = 1 - age / 600;
+          const tf2 = parseInt(el('sel-frets').value);
+          const fw2 = (canvas.width - PL - PR) / tf2;
+          const x = d.fret === 0 ? PL - fw2 * .35 : PL + (d.fret - .5) * fw2;
+          const y = PT + d.str * sh;
+          c.globalAlpha = alpha * 0.9;
+          c.beginPath(); c.arc(x, y, 13, 0, Math.PI * 2);
+          c.fillStyle = 'rgba(255,255,255,0.25)'; c.fill();
+          c.strokeStyle = 'rgba(255,255,255,0.8)'; c.lineWidth = 1.5; c.stroke();
+          c.globalAlpha = alpha;
+          c.fillStyle = '#fff'; c.textAlign = 'center';
+          c.font = 'bold 9px DM Mono,monospace';
+          c.fillText(d.noteName, x, y + 3.5);
+          c.globalAlpha = 1;
+        });
+      }
+
+      // ── Accomp settings ──────────────────────────────────────
+      function openSettings() { el('modal-settings').classList.add('open'); }
+      function closeSettings() {
+        acfg.vol = parseInt(el('sl-mvol').value) / 100;
+        acfg.strum = parseInt(el('sel-strum').value);
+        el('modal-settings').classList.remove('open');
+      }
+      function setTimbre(t) {
+        acfg.timbre = t;
+        el('btn-guitar').classList.toggle('on', t === 'guitar');
+        el('btn-piano').classList.toggle('on', t === 'piano');
+      }
+      function setMetroVol(v) { metro.vol = v / 100; }
+
+      function setArp(mode) {
+        acfg.arp = mode;
+        ['none', 'up', 'down'].forEach(m => {
+          el('arp-' + m).classList.toggle('on', m === mode);
+        });
+        el('arp-speed-row').style.display = mode === 'none' ? 'none' : '';
+      }
+      function setArpSpeed(ms) { acfg.arpSpeed = ms; }
+      function setRoleVol(role, pct) { acfg.roleVol[role] = pct / 100; }
+
+      // ── Init ─────────────────────────────────────────────────
+      function init() {
+
+        buildBeatDots(); loadProgs(); loadStdOverrides(); refreshProgPreviews(); refreshTypeDisp();
+        chordList = buildList(); refreshDisplay();
+
+        // load saved scales
+        try { const r = localStorage.getItem('gp_scales'); if (r) savedScales = JSON.parse(r); } catch (e) { }
+        renderSavedScales();
+
+        el('el-ctypes').addEventListener('click', ev => {
+          const b = ev.target.closest('.ctbtn'); if (!b) return;
+          b.classList.toggle('on'); refreshTypeDisp();
+          if (running) { stopPlay(); paused = false; chordList = buildList(); chordPos = 0; beatCount = 0; startPlay(); }
+        });
+
+        let fbRafId = null;
+        new ResizeObserver(entries => {
+          if (fbRafId) cancelAnimationFrame(fbRafId);
+          fbRafId = requestAnimationFrame(() => { fbRafId = null; drawFB(); });
+        }).observe(el('fb-canvas').parentElement);
+
+        // Fretboard click → play note
+        el('fb-canvas').addEventListener('click', ev => {
+          const canvas = el('fb-canvas');
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = canvas.width / rect.width;
+          const mx = (ev.clientX - rect.left) * scaleX;
+          const my = (ev.clientY - rect.top) * scaleX;
+          const tf = parseInt(el('sel-frets').value);
+          const PL = 30, PR = 10, PT = 30, PB = 20;
+          const fw = (canvas.width - PL - PR) / tf;
+          const sh = (canvas.height - PT - PB) / 5;
+          // Find string (y)
+          let closestStr = -1, closestStrDist = 99999;
+          for (let s = 0; s < 6; s++) {
+            const sy = PT + s * sh; const d = Math.abs(my - sy);
+            if (d < closestStrDist) { closestStrDist = d; closestStr = s; }
+          }
+          if (closestStrDist > sh * 0.55) return;
+          // Find fret (x)
+          let fret = -1;
+          if (mx < PL) { fret = 0; }
+          else {
+            const fi = Math.floor((mx - PL) / fw);
+            if (fi >= 0 && fi < tf) fret = fi + 1;
+          }
+          if (fret < 0) return;
+          // Calculate note
+          const STR_MIDI = [64, 59, 55, 50, 45, 40];
+          const midi = STR_MIDI[closestStr] + fret;
+          const noteIdx = ((midi % 12) + 12) % 12;
+          const NOTES_L = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+          const noteName = NOTES_L[noteIdx];
+          const oct = Math.floor(midi / 12) - 1;
+          const freq = 440 * Math.pow(2, (midi - 69) / 12);
+          // Play
+          const ac = getAC();
+          const vol = 0.25;
+          if (acfg.timbre === 'piano') playEPiano(freq, ac.currentTime, 1.5, vol);
+          else playGuitar(freq, ac.currentTime, 1.2, vol);
+          // Visual flash
+          flashFretDot(closestStr, fret, noteName);
+        });
+
+        el('modal-settings').addEventListener('click', ev => { if (ev.target === ev.currentTarget) closeSettings(); });
+        el('modal-scale').addEventListener('click', ev => { if (ev.target === ev.currentTarget) closeScaleModal(); });
+        el('chk-scale-on').addEventListener('change', () => { scaleOn = el('chk-scale-on').checked; drawFB(); });
+
+        document.addEventListener('keydown', ev => {
+          if (ev.target.tagName === 'INPUT') return;
+          if (ev.code === 'Space') {
+            ev.preventDefault();
+            if (!running && !paused) togglePlay(); else togglePause();
+          }
+          if (ev.code === 'KeyP') { ev.preventDefault(); togglePause(); }
+          if (ev.code === 'ArrowLeft') prevChord();
+          if (ev.code === 'ArrowRight') nextChord();
+          if (ev.code === 'KeyS') listenChord();
+        });
+      }
+
+      return {
+        togglePlay, togglePause, prevChord, nextChord, listenChord, toggleAccomp, setBpm, shiftBpm,
+        openSettings, closeSettings, setTimbre, setArp, setArpSpeed, setRoleVol,
+        buildBeatDots, setMetroVol, renderMetroBeatBtns, setKey, allTypes, noneTypes,
+        chooseProg, saveCustomProg, togglePanel, toggleRole, toggleNextGhost,
+        openScaleModal, closeScaleModal, onScaleChange, applyCustomScale, saveCustomScale,
+        saveStdEdit, cancelStdEdit,
+        toggleVoicingMode, changeVoicingType, prevVoicingInv, nextVoicingInv, playCurrentVoicing,
+        drawFB, init, toggleTheme
+      };
+    })();
+
+    document.addEventListener('DOMContentLoaded', GP.init);
+  </script>
+</body>
+
+</html>
